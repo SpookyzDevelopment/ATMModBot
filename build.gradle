@@ -27,16 +27,21 @@ dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
 
     // JDA for Discord integration
-    implementation "net.dv8tion:JDA:5.0.0-beta.24"
+    shade "net.dv8tion:JDA:5.1.0"
     
     // Required for JDA
-    implementation "org.slf4j:slf4j-simple:2.0.9"
-    implementation "com.squareup.okhttp3:okhttp:4.12.0"
-
-    // HTTP client for Pterodactyl API
-    implementation "com.squareup.okhttp3:okhttp:4.12.0"
-    implementation "com.google.code.gson:gson:2.10.1"
-    // Logging
-    implementation "org.slf4j:slf4j-api:2.0.9"
+    shade "org.slf4j:slf4j-simple:2.0.9"
+    shade "com.squareup.okhttp3:okhttp:4.12.0"
+    shade "com.fasterxml.jackson.core:jackson-core:2.15.2"
+    shade "com.fasterxml.jackson.core:jackson-databind:2.15.2"
+    shade "com.fasterxml.jackson.core:jackson-annotations:2.15.2"
+    shade "org.apache.commons:commons-collections4:4.4"
+    shade "net.sf.trove4j:trove4j:3.0.3"
+    shade "club.minnced:opus-java:1.1.1"
+    shade "org.jetbrains:annotations:24.0.1"
 }
 
+jar {
+    from configurations.shade.collect { it.isDirectory() ? it : zipTree(it) }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

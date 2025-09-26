@@ -22,3 +22,7 @@ version="${mod_version}"
 displayName="${mod_name}"
 authors="${mod_authors}"
 description='''${mod_description}'''
+logoFile="logo.png"
+
+[modproperties.${mod_id}]
+    configBackground="minecraft:textures/block/stone.png"
