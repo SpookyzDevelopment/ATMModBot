@@ -1,20 +1,36 @@
 plugins {
     id 'java'
-    id 'net.neoforged.moddev' version '0.1.89'
+    id 'net.neoforged.moddev' version '2.0.28-beta'
 }
 
-java {
-    toolchain { languageVersion = JavaLanguageVersion.of(21) }
-}
+version = project.mod_version
+group = 'org.spookydevz.chatbridge'
+archivesBaseName = project.mod_id
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 neoForge {
     version = project.neo_version
-    neoFormVersion = project.neo_form_version
+    
+    runs {
+        server {
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+    }
+
+    mods {
+        spooky_chatbridge {
+            sourceSet sourceSets.main
+        }
+    }
 }
 
 repositories {
     mavenCentral()
-    maven { url = "https://maven.neoforged.net/releases" }
+    maven {
+        name = 'NeoForged'
+        url = 'https://maven.neoforged.net/releases'
+    }
 }
 
 configurations {
@@ -23,25 +39,49 @@ configurations {
 }
 
 dependencies {
-    // NeoForge itself
     implementation "net.neoforged:neoforge:${neo_version}"
-
-    // JDA for Discord integration
-    shade "net.dv8tion:JDA:5.1.0"
     
-    // Required for JDA
-    shade "org.slf4j:slf4j-simple:2.0.9"
-    shade "com.squareup.okhttp3:okhttp:4.12.0"
-    shade "com.fasterxml.jackson.core:jackson-core:2.15.2"
-    shade "com.fasterxml.jackson.core:jackson-databind:2.15.2"
-    shade "com.fasterxml.jackson.core:jackson-annotations:2.15.2"
-    shade "org.apache.commons:commons-collections4:4.4"
-    shade "net.sf.trove4j:trove4j:3.0.3"
-    shade "club.minnced:opus-java:1.1.1"
-    shade "org.jetbrains:annotations:24.0.1"
+    // JDA for Discord integration - properly shaded
+    shade('net.dv8tion:JDA:5.0.0-beta.24') {
+        exclude group: 'club.minnced', module: 'opus-java'
+    }
+    
+    // Required dependencies for JDA
+    shade 'org.slf4j:slf4j-simple:2.0.9'
+    shade 'com.squareup.okhttp3:okhttp:4.12.0'
+    shade 'com.fasterxml.jackson.core:jackson-core:2.16.1'
+    shade 'com.fasterxml.jackson.core:jackson-databind:2.16.1'
+    shade 'com.fasterxml.jackson.core:jackson-annotations:2.16.1'
+    shade 'org.apache.commons:commons-collections4:4.4'
+    shade 'net.sf.trove4j:trove4j:3.0.3'
+    shade 'org.jetbrains:annotations:24.1.0'
 }
 
 jar {
     from configurations.shade.collect { it.isDirectory() ? it : zipTree(it) }
+    
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    
+    exclude 'META-INF/MANIFEST.MF'
+    exclude 'META-INF/*.SF'
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
+    exclude 'META-INF/maven/**'
+    exclude 'META-INF/versions/**'
+    
+    manifest {
+        attributes([
+            'Specification-Title': project.mod_name,
+            'Specification-Vendor': project.mod_authors,
+            'Specification-Version': '1',
+            'Implementation-Title': project.name,
+            'Implementation-Version': project.version,
+            'Implementation-Vendor': project.mod_authors,
+            'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
 }
