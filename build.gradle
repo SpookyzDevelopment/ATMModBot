@@ -14,6 +14,12 @@ neoForge {
     
     runs {
         server {
+            type = 'server'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+        
+        client {
+            type = 'client'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
     }
