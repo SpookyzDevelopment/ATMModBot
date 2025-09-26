@@ -1,15 +1,15 @@
 modLoader="neoforge"
 loaderVersion="[4,)"
-license="${mod_license}"
+license="MIT"
 
-[[dependencies.${mod_id}]]
+[[dependencies.spooky_chatbridge]]
     modId="neoforge"
     mandatory=true
     versionRange="[21.1.206,)"
     ordering="NONE"
     side="SERVER"
 
-[[dependencies.${mod_id}]]
+[[dependencies.spooky_chatbridge]]
     modId="minecraft"
     mandatory=true
     versionRange="[1.21.1,1.22)"
@@ -17,12 +17,12 @@ license="${mod_license}"
     side="SERVER"
 
 [[mods]]
-modId="${mod_id}"
-version="${mod_version}"
-displayName="${mod_name}"
-authors="${mod_authors}"
-description='''${mod_description}'''
+modId="spooky_chatbridge"
+version="1.0.0"
+displayName="SpookyDevz ChatBridge"
+authors="SpookyDevz"
+description='''Server-side Discord ↔ Minecraft chat bridge with /discord and /chatbridge commands.'''
 logoFile="logo.png"
 
-[modproperties.${mod_id}]
+[modproperties.spooky_chatbridge]
     configBackground="minecraft:textures/block/stone.png"
