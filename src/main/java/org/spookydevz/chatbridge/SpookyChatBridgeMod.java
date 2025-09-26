@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 public class SpookyChatBridgeMod {
     public static final String MODID = "spooky_chatbridge";
     private static final Logger LOGGER = LoggerFactory.getLogger(SpookyChatBridgeMod.class);
+    private static PterodactylClient pterodactylClient;
 
     public SpookyChatBridgeMod(IEventBus modBus) {
         LOGGER.info("Initializing SpookyDevz ChatBridge...");
@@ -36,12 +37,32 @@ public class SpookyChatBridgeMod {
     private void onServerStarted(ServerStartedEvent e) {
         LOGGER.info("Server started, initializing Discord bridge...");
         DiscordBridge.start(Config.DISCORD_TOKEN.get(), Config.DISCORD_CHANNEL_ID.getLongValue());
+        
+        // Initialize Pterodactyl client if enabled
+        if (Config.PTERODACTYL_ENABLED.get()) {
+            String apiUrl = Config.PTERODACTYL_API_URL.get();
+            String apiKey = Config.PTERODACTYL_API_KEY.get();
+            String serverId = Config.PTERODACTYL_SERVER_ID.get();
+            
+            if (!apiUrl.isEmpty() && !apiKey.equals("PUT_PTERODACTYL_API_KEY_HERE") && !serverId.isEmpty()) {
+                pterodactylClient = new PterodactylClient(apiUrl, apiKey, serverId);
+                LOGGER.info("Pterodactyl client initialized for server: {}", serverId);
+            } else {
+                LOGGER.warn("Pterodactyl integration enabled but missing configuration!");
+            }
+        }
     }
 
     @SubscribeEvent
     private void onServerStopping(ServerStoppingEvent e) {
         LOGGER.info("Server stopping, shutting down Discord bridge...");
         DiscordBridge.stop();
+        
+        if (pterodactylClient != null) {
+            LOGGER.info("Shutting down Pterodactyl client...");
+            pterodactylClient.shutdown();
+            pterodactylClient = null;
+        }
     }
 
     @SubscribeEvent
@@ -60,5 +81,9 @@ public class SpookyChatBridgeMod {
     private void onRegisterCommands(RegisterCommandsEvent e) {
         LOGGER.info("Registering commands...");
         CommandHandler.register(e.getDispatcher());
+    }
+    
+    public static PterodactylClient getPterodactylClient() {
+        return pterodactylClient;
     }
 }
