@@ -71,7 +71,7 @@ public class CommandHandler {
             Thread.sleep(2000);
             
             // Start with new config values
-            DiscordBridge.start(Config.DISCORD_TOKEN.get(), Config.DISCORD_CHANNEL_ID.getLongValue());
+            DiscordBridge.start(Config.DISCORD_TOKEN.get(), Config.DISCORD_CHANNEL_ID.get());
             
             source.sendSuccess(() -> Component.literal("✅ Discord bridge reloaded successfully!")
                     .withStyle(ChatFormatting.GREEN), true);

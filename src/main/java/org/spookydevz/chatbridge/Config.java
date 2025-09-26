@@ -1,6 +1,6 @@
 package org.spookydevz.chatbridge;
 
-import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -37,7 +37,7 @@ public class Config {
 
     public static final ModConfigSpec SPEC = BUILDER.build();
 
-    public static void register() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, SPEC);
+    public static void register(ModContainer container) {
+        container.registerConfig(ModConfig.Type.COMMON, SPEC);
     }
 }

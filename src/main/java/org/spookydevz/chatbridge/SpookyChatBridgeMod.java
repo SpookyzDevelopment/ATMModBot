@@ -1,16 +1,18 @@
 package org.spookydevz.chatbridge;
 
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.player.AdvancementEvent;
+import net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementProgressEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
@@ -21,25 +23,27 @@ import org.slf4j.LoggerFactory;
 public class SpookyChatBridgeMod {
     public static final String MODID = "spooky_chatbridge";
     private static final Logger LOGGER = LoggerFactory.getLogger(SpookyChatBridgeMod.class);
+    private final ModContainer modContainer;
 
-    public SpookyChatBridgeMod(IEventBus modBus) {
+    public SpookyChatBridgeMod(IEventBus modBus, ModContainer modContainer) {
         LOGGER.info("Initializing SpookyDevz ChatBridge...");
+        this.modContainer = modContainer;
         
         modBus.addListener(this::setup);
         
         // Register event handlers
-        MinecraftForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(this);
     }
 
     private void setup(final FMLCommonSetupEvent event) {
         LOGGER.info("Setting up SpookyDevz ChatBridge configuration...");
-        Config.register();
+        Config.register(modContainer);
     }
 
     @SubscribeEvent
     public void onServerStarted(ServerStartedEvent event) {
         LOGGER.info("Server started, initializing Discord bridge...");
-        DiscordBridge.start(Config.DISCORD_TOKEN.get(), Config.DISCORD_CHANNEL_ID.getLongValue());
+        DiscordBridge.start(Config.DISCORD_TOKEN.get(), Config.DISCORD_CHANNEL_ID.get());
     }
 
     @SubscribeEvent
@@ -112,16 +116,17 @@ public class SpookyChatBridgeMod {
     }
 
     @SubscribeEvent
-    public void onAdvancement(AdvancementEvent.AdvancementProgressEvent event) {
+    public void onAdvancement(AdvancementProgressEvent event) {
         if (!Config.ENABLE_ADVANCEMENT_MESSAGES.get()) return;
         
         try {
             ServerPlayer player = (ServerPlayer) event.getEntity();
             
             // Only send message when advancement is completed
-            if (event.getProgressType() == AdvancementEvent.AdvancementProgressEvent.ProgressType.GRANT) {
-                String advancementTitle = event.getAdvancement().getDisplay() != null ? 
-                    event.getAdvancement().getDisplay().getTitle().getString() : "Unknown Achievement";
+            if (event.getProgressType() == AdvancementProgressEvent.ProgressType.GRANT) {
+                AdvancementHolder advancement = event.getAdvancement();
+                String advancementTitle = advancement.value().display().isPresent() ? 
+                    advancement.value().display().get().getTitle().getString() : "Unknown Achievement";
                 
                 String message = "🏆 **" + player.getName().getString() + "** has made the advancement **" + advancementTitle + "**";
                 DiscordBridge.sendToDiscord(message);
