@@ -1,6 +1,20 @@
-modLoader="javafml"
+modLoader="neoforge"
 loaderVersion="[4,)"
 license="${mod_license}"
+
+[[dependencies.${mod_id}]]
+    modId="neoforge"
+    mandatory=true
+    versionRange="[21.1.206,)"
+    ordering="NONE"
+    side="SERVER"
+
+[[dependencies.${mod_id}]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.21.1,1.22)"
+    ordering="NONE"
+    side="SERVER"
 
 [[mods]]
 modId="${mod_id}"

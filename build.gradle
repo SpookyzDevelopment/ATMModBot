@@ -26,8 +26,12 @@ dependencies {
     // NeoForge itself
     implementation "net.neoforged:neoforge:${neo_version}"
 
-    // Example: Okio (if you’re still using it)
-    implementation "com.squareup.okio:okio:3.2.0"
+    // JDA for Discord integration
+    implementation "net.dv8tion:JDA:5.0.0-beta.24"
+    
+    // Required for JDA
+    implementation "org.slf4j:slf4j-simple:2.0.9"
+    implementation "com.squareup.okhttp3:okhttp:4.12.0"
 
     // Logging
     implementation "org.slf4j:slf4j-api:2.0.9"
