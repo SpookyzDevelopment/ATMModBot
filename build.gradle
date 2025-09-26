@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+    id 'net.neoforged.moddev' version '0.1.89'
+}
+
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(21) }
+}
+
+neoForge {
+    version = project.neo_version
+    neoFormVersion = project.neo_form_version
+}
+
+repositories {
+    mavenCentral()
+    maven { url = "https://maven.neoforged.net/releases" }
+}
+
+configurations {
+    shade
+    implementation.extendsFrom shade
+}
+
+dependencies {
+    // NeoForge itself
+    implementation "net.neoforged:neoforge:${neo_version}"
+
+    // Example: Okio (if you’re still using it)
+    implementation "com.squareup.okio:okio:3.2.0"
+
+    // Logging
+    implementation "org.slf4j:slf4j-api:2.0.9"
+}
+
